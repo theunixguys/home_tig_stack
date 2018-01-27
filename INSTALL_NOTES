@@ -1,0 +1,108 @@
+These notes were used to install and configure the TIG stack on Ubuntu 16.04.3 LTS
+    TIG = Telegraf, InfluxDB, Grafana
+
+With the following, I setup a dashboard to show graphs of the following metrics (much more possible easily)
+    CPU, memory, kernel activity
+    latency to several speed test servers in the region   (see speedtest_ping.py)
+    bandwidth to an AT&T NYC speed test server  (see speedtest.py)
+    etc
+    
+
+Grafana
+	
+	DOCS:  http://docs.grafana.org
+		CLI:  http://docs.grafana.org/administration/cli/
+		INFLUX INTEGRATION:  http://docs.grafana.org/features/datasources/influxdb/
+		
+	DOWNLOAD:   https://grafana.com/grafana/download
+
+        INSTALLING
+	wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_4.6.3_amd64.deb 
+	sudo dpkg -i grafana_4.6.3_amd64.deb 
+	
+	CONFIG is:   /etc/grafana/grafana.ini
+	
+	LISTENS ON:  http://localhost:3000/login
+	
+	sudo /bin/systemctl daemon-reload
+	 sudo /bin/systemctl enable grafana-server
+	### You can start grafana-server by executing
+	 sudo /bin/systemctl start grafana-server
+	
+	Change password in GUI
+	
+	GRAPHING
+		http://docs.grafana.org/features/panels/graph/
+	Working with increasing data and derivitive function
+		http://docs.grafana.org/features/datasources/influxdb/
+
+
+INFLUXDB and TELEGRAF
+
+	DOWNLOAD:  https://portal.influxdata.com/downloads
+	
+	INSTALL:
+		wget https://dl.influxdata.com/influxdb/releases/influxdb_1.4.2_amd64.deb
+                sudo dpkg -i influxdb_1.4.2_amd64.deb
+		
+		wget https://dl.influxdata.com/telegraf/releases/telegraf_1.5.0-1_amd64.deb
+                sudo dpkg -i telegraf_1.5.0-1_amd64.deb
+		
+	DOCS
+		https://docs.influxdata.com/telegraf/v1.5/
+		https://docs.influxdata.com/influxdb/v1.4/
+	
+	START
+		systemctl start influxdb
+	CONFIG
+		/etc/influxdb/influxdb.conf
+	PORTS
+		8086 is API
+		8088 is control
+	AUTH
+	
+	PYTHON CLIENT FOR INFLUX
+		https://docs.influxdata.com/influxdb/v0.8/client_libraries/python/
+	
+	START
+		systemctl start telegraf
+	CONFIG
+		/etc/telegraf/telegraf.conf
+	
+	
+	INTERACT WITH INFLUX via CLI
+		influx -precision rfc3339
+		show databases
+	QUERY HELP
+		https://docs.influxdata.com/influxdb/v1.4/query_language/data_exploration/
+
+
+INFLUX DEEPER DOCS
+	Glossary
+		https://docs.influxdata.com/influxdb/v1.4/concepts/glossary/
+	Writing API
+		https://docs.influxdata.com/influxdb/v1.4/guides/writing_data/
+		https://docs.influxdata.com/influxdb/v1.4/tools/api/
+	Querying data
+		https://docs.influxdata.com/influxdb/v1.4/guides/querying_data/
+	Line protocol
+		https://docs.influxdata.com/influxdb/v1.4/concepts/glossary/#line-protocol
+	Data exploration
+		https://docs.influxdata.com/influxdb/v1.4/query_language/data_exploration/
+	Schema exploration
+		https://docs.influxdata.com/influxdb/v1.4/query_language/schema_exploration/
+	Database management
+		https://docs.influxdata.com/influxdb/v1.4/query_language/database_management/
+	
+
+
+ADDING HAPROXY STATS
+	I am already setup for http://localhost/monitor
+		Auth is required
+	Haproxy docs
+		http://cbonte.github.io/haproxy-dconv/1.6/configuration.html#4-stats%20enable
+		FIELD names
+			http://cbonte.github.io/haproxy-dconv/1.6/management.html#9
+			
+	Getting stats into telegraf
+		https://github.com/influxdata/telegraf/tree/master/plugins/inputs/haproxy
